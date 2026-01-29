@@ -1,0 +1,31 @@
+{
+  "name": "wopr-plugin-voice-deepgram-stt",
+  "version": "1.0.0",
+  "description": "Deepgram STT provider using nova-3 model",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w"
+  },
+  "dependencies": {
+    "ws": "^8.16.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "@types/node": "^20.10.0",
+    "@types/ws": "^8.5.10"
+  },
+  "wopr": {
+    "plugin": {
+      "name": "voice-deepgram-stt",
+      "category": "voice",
+      "type": "stt",
+      "description": "Cloud STT using Deepgram's nova-3 model",
+      "requires": {
+        "env": ["DEEPGRAM_API_KEY"]
+      },
+      "install": []
+    }
+  }
+}
