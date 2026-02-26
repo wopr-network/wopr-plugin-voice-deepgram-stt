@@ -17,6 +17,8 @@ function makeMockCtx(
 	const ctx = {
 		getConfig: vi.fn().mockReturnValue(config),
 		registerSTTProvider: vi.fn(),
+		registerConfigSchema: vi.fn(),
+		unregisterConfigSchema: vi.fn(),
 		log: { info: vi.fn(), error: vi.fn() },
 	};
 	return ctx as unknown as WOPRPluginContext & typeof ctx;
