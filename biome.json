@@ -1,0 +1,13 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.4.4/schema.json",
+  "files": {
+    "includes": ["index.ts", "index.test.ts"]
+  },
+  "linter": {
+    "enabled": true
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "tab"
+  }
+}
