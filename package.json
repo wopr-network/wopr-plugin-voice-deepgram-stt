@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@wopr-network/plugin-types": "^0.2.1",
     "ws": "^8.16.0"
   },
   "description": "Deepgram STT provider using nova-3 model",
@@ -7,18 +8,20 @@
     "@biomejs/biome": "^2.4.3",
     "@types/node": "^25.2.3",
     "@types/ws": "^8.5.10",
-    "typescript": "^5.3.0"
+    "typescript": "^5.3.0",
+    "vitest": "^3.2.4"
   },
   "main": "index.js",
   "name": "@wopr-network/wopr-plugin-voice-deepgram-stt",
   "scripts": {
     "build": "tsc",
-    "check": "biome check src/ && tsc --noEmit",
+    "check": "biome check index.ts && tsc --noEmit",
     "dev": "tsc -w",
-    "format": "biome format --write src/",
-    "lint": "biome check src/",
-    "lint:fix": "biome check --fix src/",
-    "prepublishOnly": "npm run build"
+    "format": "biome format --write index.ts",
+    "lint": "biome check index.ts",
+    "lint:fix": "biome check --fix index.ts",
+    "prepublishOnly": "npm run build",
+    "test": "vitest run"
   },
   "type": "module",
   "version": "1.0.0",
@@ -26,12 +29,61 @@
     "plugin": {
       "category": "voice",
       "description": "Cloud STT using Deepgram's nova-3 model",
+      "icon": "microphone",
       "install": [],
       "name": "voice-deepgram-stt",
+      "tags": [
+        "voice",
+        "stt",
+        "deepgram",
+        "cloud",
+        "transcription"
+      ],
       "requires": {
         "env": [
           "DEEPGRAM_API_KEY"
         ]
+      },
+      "provides": {
+        "capabilities": [
+          {
+            "type": "stt",
+            "name": "deepgram-stt"
+          }
+        ]
+      },
+      "lifecycle": {
+        "init": true,
+        "shutdown": true
+      },
+      "configSchema": {
+        "type": "object",
+        "properties": {
+          "apiKey": {
+            "type": "string",
+            "description": "Deepgram API key",
+            "secret": true,
+            "setupFlow": "paste"
+          },
+          "model": {
+            "type": "string",
+            "description": "Deepgram model (default: nova-3)",
+            "default": "nova-3",
+            "enum": [
+              "nova-3",
+              "nova-2",
+              "nova",
+              "enhanced",
+              "base"
+            ]
+          },
+          "language": {
+            "type": "string",
+            "description": "Language code (default: en)",
+            "default": "en"
+          }
+        },
+        "required": []
       },
       "type": "stt"
     }

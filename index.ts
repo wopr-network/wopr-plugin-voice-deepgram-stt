@@ -23,15 +23,61 @@
  * ```
  */
 
-import type {
-	STTProvider,
-	STTSession,
-	STTOptions,
-	STTTranscriptChunk,
-	VoicePluginMetadata,
-} from "wopr/voice";
-import type { WOPRPlugin, WOPRPluginContext } from "wopr";
+import type { WOPRPlugin, WOPRPluginContext } from "@wopr-network/plugin-types";
 import WebSocket from "ws";
+
+// =============================================================================
+// Voice Types (not yet in @wopr-network/plugin-types — local definitions)
+// These match the canonical definitions in wopr core's src/voice/types.ts.
+// =============================================================================
+
+interface STTTranscriptChunk {
+	text: string;
+	isFinal: boolean;
+	confidence?: number;
+	timestamp?: number;
+}
+
+interface STTOptions {
+	language?: string;
+	wordTimestamps?: boolean;
+	vadEnabled?: boolean;
+}
+
+interface STTSession {
+	sendAudio(audio: Buffer): void;
+	endAudio(): void;
+	onPartial(callback: (chunk: STTTranscriptChunk) => void): void;
+	waitForTranscript(timeoutMs?: number): Promise<string>;
+	close(): Promise<void>;
+}
+
+interface VoicePluginRequirements {
+	bins?: string[];
+	env?: string[];
+	docker?: string[];
+	config?: string[];
+}
+
+interface VoicePluginMetadata {
+	name: string;
+	version: string;
+	type: "stt" | "tts";
+	description?: string;
+	capabilities?: string[];
+	local?: boolean;
+	emoji?: string;
+	homepage?: string;
+	requires?: VoicePluginRequirements;
+	primaryEnv?: string;
+}
+
+interface STTProvider {
+	readonly metadata: VoicePluginMetadata;
+	createSession(options?: STTOptions): Promise<STTSession>;
+	transcribe(audio: Buffer, options?: STTOptions): Promise<string>;
+	healthCheck(): Promise<boolean>;
+}
 
 // =============================================================================
 // Configuration
@@ -223,7 +269,7 @@ class DeepgramSession implements STTSession {
 						this.finishTranscript();
 					}
 				}
-			} catch (err) {
+			} catch (err: unknown) {
 				console.error("[deepgram] Failed to parse message:", err);
 			}
 		});
@@ -397,7 +443,7 @@ class DeepgramProvider implements STTProvider {
 			{
 				method: "POST",
 				headers,
-				body: audio,
+				body: audio as unknown as BodyInit,
 			},
 			this.config.timeoutMs,
 		);
@@ -453,34 +499,41 @@ class DeepgramProvider implements STTProvider {
 // Plugin Export
 // =============================================================================
 
+let ctx: WOPRPluginContext | null = null;
 let provider: DeepgramProvider | null = null;
+const cleanups: Array<() => void> = [];
 
 const plugin: WOPRPlugin = {
 	name: "voice-deepgram-stt",
 	version: "1.0.0",
 	description: "Cloud STT using Deepgram's nova-3 model",
 
-	async init(ctx: WOPRPluginContext) {
+	async init(pluginCtx: WOPRPluginContext) {
+		ctx = pluginCtx;
 		const config = ctx.getConfig<DeepgramConfig>();
 
 		try {
 			provider = new DeepgramProvider(config);
 			provider.validateConfig();
-			ctx.registerExtension("stt", provider);
-			ctx.registerCapabilityProvider("stt", {
-				id: provider.metadata.name,
-				name: provider.metadata.description || provider.metadata.name,
-			});
+			ctx.registerSTTProvider(provider);
 			ctx.log.info("Deepgram STT provider registered");
-		} catch (err) {
+		} catch (err: unknown) {
 			ctx.log.error(`Failed to register Deepgram STT: ${err}`);
 			throw err;
 		}
 	},
 
 	async shutdown() {
-		// No persistent connections to clean up
+		for (const cleanup of cleanups) {
+			try {
+				cleanup();
+			} catch {
+				/* ignore */
+			}
+		}
+		cleanups.length = 0;
 		provider = null;
+		ctx = null;
 	},
 };
 
