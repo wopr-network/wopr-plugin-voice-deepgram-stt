@@ -23,7 +23,11 @@
  * ```
  */
 
-import type { WOPRPlugin, WOPRPluginContext } from "@wopr-network/plugin-types";
+import type {
+	ConfigSchema,
+	WOPRPlugin,
+	WOPRPluginContext,
+} from "@wopr-network/plugin-types";
 import WebSocket from "ws";
 
 // =============================================================================
@@ -499,6 +503,42 @@ class DeepgramProvider implements STTProvider {
 // Plugin Export
 // =============================================================================
 
+const configSchema: ConfigSchema = {
+	title: "Deepgram STT",
+	description: "Cloud STT using Deepgram's nova-3 model",
+	fields: [
+		{
+			name: "apiKey",
+			type: "password",
+			label: "API Key",
+			description: "Deepgram API key",
+			secret: true,
+			setupFlow: "paste",
+		},
+		{
+			name: "model",
+			type: "select",
+			label: "Model",
+			description: "Deepgram model (default: nova-3)",
+			default: "nova-3",
+			options: [
+				{ value: "nova-3", label: "nova-3" },
+				{ value: "nova-2", label: "nova-2" },
+				{ value: "nova", label: "nova" },
+				{ value: "enhanced", label: "enhanced" },
+				{ value: "base", label: "base" },
+			],
+		},
+		{
+			name: "language",
+			type: "text",
+			label: "Language",
+			description: "Language code (default: en)",
+			default: "en",
+		},
+	],
+};
+
 let ctx: WOPRPluginContext | null = null;
 let provider: DeepgramProvider | null = null;
 const cleanups: Array<() => void> = [];
@@ -511,6 +551,8 @@ const plugin: WOPRPlugin = {
 	async init(pluginCtx: WOPRPluginContext) {
 		ctx = pluginCtx;
 		const config = ctx.getConfig<DeepgramConfig>();
+
+		ctx.registerConfigSchema("wopr-plugin-voice-deepgram-stt", configSchema);
 
 		try {
 			provider = new DeepgramProvider(config);
@@ -532,6 +574,9 @@ const plugin: WOPRPlugin = {
 			}
 		}
 		cleanups.length = 0;
+		if (ctx) {
+			ctx.unregisterConfigSchema("wopr-plugin-voice-deepgram-stt");
+		}
 		provider = null;
 		ctx = null;
 	},

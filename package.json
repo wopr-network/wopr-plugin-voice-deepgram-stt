@@ -52,9 +52,11 @@
           }
         ]
       },
+      "capabilities": ["provider"],
       "lifecycle": {
         "init": true,
-        "shutdown": true
+        "shutdown": true,
+        "shutdownBehavior": "graceful"
       },
       "configSchema": {
         "type": "object",
