@@ -16,7 +16,8 @@ function makeMockCtx(
 ) {
 	const ctx = {
 		getConfig: vi.fn().mockReturnValue(config),
-		registerSTTProvider: vi.fn(),
+		registerCapabilityProvider: vi.fn(),
+		unregisterCapabilityProvider: vi.fn(),
 		registerConfigSchema: vi.fn(),
 		unregisterConfigSchema: vi.fn(),
 		log: { info: vi.fn(), error: vi.fn() },
@@ -55,7 +56,8 @@ describe("wopr-plugin-voice-deepgram-stt", () => {
 
 			await plugin.init?.(mockCtx);
 
-			expect(mockCtx.registerSTTProvider).toHaveBeenCalledWith(
+			expect(mockCtx.registerCapabilityProvider).toHaveBeenCalledWith(
+				"stt",
 				expect.any(Object),
 			);
 		});
@@ -109,7 +111,7 @@ describe("wopr-plugin-voice-deepgram-stt", () => {
 
 			await plugin.init?.(mockCtx);
 
-			const registeredProvider = mockCtx.registerSTTProvider.mock.calls[0][0];
+			const registeredProvider = mockCtx.registerCapabilityProvider.mock.calls[0][1];
 
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
@@ -134,7 +136,7 @@ describe("wopr-plugin-voice-deepgram-stt", () => {
 			const mockCtx = makeMockCtx();
 
 			await plugin.init?.(mockCtx);
-			const registeredProvider = mockCtx.registerSTTProvider.mock.calls[0][0];
+			const registeredProvider = mockCtx.registerCapabilityProvider.mock.calls[0][1];
 
 			mockFetch.mockResolvedValueOnce({
 				ok: false,
@@ -151,7 +153,7 @@ describe("wopr-plugin-voice-deepgram-stt", () => {
 			const mockCtx = makeMockCtx();
 
 			await plugin.init?.(mockCtx);
-			const registeredProvider = mockCtx.registerSTTProvider.mock.calls[0][0];
+			const registeredProvider = mockCtx.registerCapabilityProvider.mock.calls[0][1];
 
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
@@ -169,7 +171,7 @@ describe("wopr-plugin-voice-deepgram-stt", () => {
 			const mockCtx = makeMockCtx();
 
 			await plugin.init?.(mockCtx);
-			const registeredProvider = mockCtx.registerSTTProvider.mock.calls[0][0];
+			const registeredProvider = mockCtx.registerCapabilityProvider.mock.calls[0][1];
 
 			mockFetch.mockResolvedValueOnce({ ok: false, status: 405 });
 
@@ -181,7 +183,7 @@ describe("wopr-plugin-voice-deepgram-stt", () => {
 			const mockCtx = makeMockCtx();
 
 			await plugin.init?.(mockCtx);
-			const registeredProvider = mockCtx.registerSTTProvider.mock.calls[0][0];
+			const registeredProvider = mockCtx.registerCapabilityProvider.mock.calls[0][1];
 
 			mockFetch.mockRejectedValueOnce(new Error("ECONNREFUSED"));
 

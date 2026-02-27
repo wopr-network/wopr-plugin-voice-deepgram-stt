@@ -352,6 +352,10 @@ class DeepgramSession implements STTSession {
 // =============================================================================
 
 class DeepgramProvider implements STTProvider {
+	// ProviderOption fields for capability registry
+	readonly id = "deepgram-stt";
+	readonly name = "Deepgram STT";
+
 	readonly metadata: VoicePluginMetadata = {
 		name: "deepgram-stt",
 		version: "1.0.0",
@@ -557,7 +561,7 @@ const plugin: WOPRPlugin = {
 		try {
 			provider = new DeepgramProvider(config);
 			provider.validateConfig();
-			ctx.registerSTTProvider(provider);
+			ctx.registerCapabilityProvider("stt", provider);
 			ctx.log.info("Deepgram STT provider registered");
 		} catch (err: unknown) {
 			ctx.log.error(`Failed to register Deepgram STT: ${err}`);
@@ -575,6 +579,9 @@ const plugin: WOPRPlugin = {
 		}
 		cleanups.length = 0;
 		if (ctx) {
+			if (provider) {
+				ctx.unregisterCapabilityProvider("stt", provider.metadata.name);
+			}
 			ctx.unregisterConfigSchema("wopr-plugin-voice-deepgram-stt");
 		}
 		provider = null;
