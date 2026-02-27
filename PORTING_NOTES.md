@@ -69,7 +69,7 @@ readonly metadata: VoicePluginMetadata = {
 2. **Partial Results**: Interim transcripts during streaming
 3. **Session Management**: Proper session lifecycle (connect, send, end, close)
 4. **Health Check**: API connectivity validation
-5. **Plugin Registration**: Auto-registers via `ctx.registerSTTProvider()`
+5. **Plugin Registration**: Auto-registers via `ctx.registerProvider()`
 
 ## Implementation Details
 
