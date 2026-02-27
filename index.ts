@@ -575,6 +575,7 @@ const plugin: WOPRPlugin = {
 		}
 		cleanups.length = 0;
 		if (ctx) {
+			ctx.unregisterProvider("deepgram-stt");
 			ctx.unregisterConfigSchema("wopr-plugin-voice-deepgram-stt");
 		}
 		provider = null;

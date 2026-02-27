@@ -16,7 +16,8 @@ function makeMockCtx(
 ) {
 	const ctx = {
 		getConfig: vi.fn().mockReturnValue(config),
-		registerSTTProvider: vi.fn(),
+		registerProvider: vi.fn(),
+		unregisterProvider: vi.fn(),
 		registerConfigSchema: vi.fn(),
 		unregisterConfigSchema: vi.fn(),
 		log: { info: vi.fn(), error: vi.fn() },
@@ -55,7 +56,7 @@ describe("wopr-plugin-voice-deepgram-stt", () => {
 
 			await plugin.init?.(mockCtx);
 
-			expect(mockCtx.registerSTTProvider).toHaveBeenCalledWith(
+			expect(mockCtx.registerProvider).toHaveBeenCalledWith(
 				expect.any(Object),
 			);
 		});
@@ -109,7 +110,7 @@ describe("wopr-plugin-voice-deepgram-stt", () => {
 
 			await plugin.init?.(mockCtx);
 
-			const registeredProvider = mockCtx.registerSTTProvider.mock.calls[0][0];
+			const registeredProvider = mockCtx.registerProvider.mock.calls[0][0];
 
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
@@ -134,7 +135,7 @@ describe("wopr-plugin-voice-deepgram-stt", () => {
 			const mockCtx = makeMockCtx();
 
 			await plugin.init?.(mockCtx);
-			const registeredProvider = mockCtx.registerSTTProvider.mock.calls[0][0];
+			const registeredProvider = mockCtx.registerProvider.mock.calls[0][0];
 
 			mockFetch.mockResolvedValueOnce({
 				ok: false,
@@ -151,7 +152,7 @@ describe("wopr-plugin-voice-deepgram-stt", () => {
 			const mockCtx = makeMockCtx();
 
 			await plugin.init?.(mockCtx);
-			const registeredProvider = mockCtx.registerSTTProvider.mock.calls[0][0];
+			const registeredProvider = mockCtx.registerProvider.mock.calls[0][0];
 
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
@@ -169,7 +170,7 @@ describe("wopr-plugin-voice-deepgram-stt", () => {
 			const mockCtx = makeMockCtx();
 
 			await plugin.init?.(mockCtx);
-			const registeredProvider = mockCtx.registerSTTProvider.mock.calls[0][0];
+			const registeredProvider = mockCtx.registerProvider.mock.calls[0][0];
 
 			mockFetch.mockResolvedValueOnce({ ok: false, status: 405 });
 
@@ -181,7 +182,7 @@ describe("wopr-plugin-voice-deepgram-stt", () => {
 			const mockCtx = makeMockCtx();
 
 			await plugin.init?.(mockCtx);
-			const registeredProvider = mockCtx.registerSTTProvider.mock.calls[0][0];
+			const registeredProvider = mockCtx.registerProvider.mock.calls[0][0];
 
 			mockFetch.mockRejectedValueOnce(new Error("ECONNREFUSED"));
 
