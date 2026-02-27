@@ -557,7 +557,7 @@ const plugin: WOPRPlugin = {
 		try {
 			provider = new DeepgramProvider(config);
 			provider.validateConfig();
-			ctx.registerSTTProvider(provider);
+			ctx.registerProvider(provider);
 			ctx.log.info("Deepgram STT provider registered");
 		} catch (err: unknown) {
 			ctx.log.error(`Failed to register Deepgram STT: ${err}`);
