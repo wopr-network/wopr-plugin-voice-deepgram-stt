@@ -1,3 +1,11 @@
+# ⚠️ This package has moved
+
+This package is now maintained in the [wopr-plugins monorepo](https://github.com/wopr-network/wopr-plugins/tree/main/packages/plugin-voice-deepgram-stt).
+
+This repository is archived and no longer accepts contributions.
+
+---
+
 # WOPR Voice Plugin: Deepgram STT
 
 Cloud-based Speech-to-Text provider using Deepgram's nova-3 model.
@@ -168,7 +176,7 @@ try {
 
 - **Batch**: ~2-5 seconds for 1 minute of audio
 - **Streaming**: Real-time with <500ms latency
-- **Accuracy**: 90-95% on clean audio
+- **Accuracy**: 90-950n clean audio
 - **Rate Limits**: Varies by plan (check Deepgram dashboard)
 
 ## License
